@@ -1,0 +1,95 @@
+Necesito crear una landing page informativa estilo moderna y profesional (inspirada en el diseño de Zyra Web3 que adjunto como referencia visual) para una aplicación de gestión de empleados llamada "EyD Group SAS - Sistema de Gestión de Talento Humano".
+Especificaciones del diseño:
+
+Estilo visual:
+
+Diseño dark mode con acentos en verde/azul (profesional y tecnológico)
+Animaciones sutiles y modernas
+Tipografía limpia y legible
+Secciones con glassmorphism o efectos de profundidad
+Gradientes sutiles en fondos
+
+
+Estructura de la página (de arriba hacia abajo):
+Header/Navbar:
+
+Logo "EyD Group SAS"
+Navegación: Inicio, Características, Beneficios, Contacto
+Botón destacado "Acceder al Sistema" (call-to-action principal)
+
+Hero Section:
+
+Título principal: "Gestión de Talento Humano Simplificada"
+Subtítulo: "Digitaliza tu proceso de contratación, gestión documental y seguimiento de empleados en una sola plataforma"
+Dos botones: "Comenzar Ahora" (primario) y "Conocer Más" (secundario)
+Imagen/ilustración moderna relacionada con RRHH o dashboard
+
+Sección: ¿Qué es EyD Talent Manager?
+
+Descripción breve: "Una plataforma integral que permite a los nuevos empleados completar su proceso de onboarding digitalmente, anexar documentos, generar hojas de vida, y facilita a RRHH el acceso centralizado a toda la información del personal."
+
+Sección: Características Principales (3-4 cards con iconos)
+
+"Onboarding Digital": Los empleados llenan sus datos mediante link personalizado
+"Gestión Documental": Carga y almacenamiento seguro de diplomas, certificados y contratos
+"Base de Datos Centralizada": Acceso rápido a información completa de empleados
+"Generación de Contratos": Creación y gestión automatizada de contratos laborales
+
+Sección: Métricas/Beneficios (estilo "Proof That Speaks for Itself")
+
+Estadísticas impactantes con números grandes:
+
+"100% Digital" - Proceso completamente paperless
+"Reducción 80%" - Tiempo en procesos administrativos
+"Acceso 24/7" - Disponibilidad total del sistema
+
+
+Gráfico o visualización de datos (puede ser decorativo)
+
+Sección: Cómo Funciona (3 pasos simples)
+
+Empleado recibe link de registro
+Completa información y anexa documentos
+RRHH gestiona y aprueba desde el dashboard
+
+Footer:
+
+Información de contacto EyD Group SAS
+Links útiles
+Copyright
+
+
+Tecnologías a usar:
+
+Next.js 15 con App Router
+TypeScript
+Tailwind CSS
+Shadcn/ui components (ya instalados)
+Framer Motion para animaciones (instalar si es necesario)
+Lucide React para iconos
+
+
+Funcionalidad del botón principal:
+
+El botón "Acceder al Sistema" debe redirigir a /dashboard (ruta que crearemos después)
+El botón "Comenzar Ahora" en hero section debe redirigir a /onboarding (para nuevos empleados)
+
+
+Responsive:
+
+Debe verse perfecto en mobile, tablet y desktop
+Hamburger menu en mobile
+
+
+
+Archivos a crear:
+
+app/page.tsx (landing page)
+components/landing/Hero.tsx
+components/landing/Features.tsx
+components/landing/Stats.tsx
+components/landing/HowItWorks.tsx
+components/layout/Navbar.tsx
+components/layout/Footer.tsx
+
+Por favor, crea una landing page moderna, atractiva y profesional siguiendo estos lineamientos. Usa los componentes de Shadcn/ui que ya están instalados y asegúrate de que el diseño sea visualmente impactante con un enfoque en la experiencia del usuario.
