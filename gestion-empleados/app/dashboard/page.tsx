@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Sparkles,
   Users,
@@ -16,34 +16,136 @@ import {
   FileCheck,
   TrendingUp,
   Bell,
+  Download,
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/lib/stores/authStore";
+import { getEmployees, type Employee } from "@/lib/api/employees";
 
 export default function DashboardPage() {
   const router = useRouter();
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [totalEmployees, setTotalEmployees] = useState(0);
+  const [totalContracts, setTotalContracts] = useState(0);
+  const [recentActivities, setRecentActivities] = useState<Array<{ user: string; action: string; time: string }>>([]);
+  const [showDownloadMessage, setShowDownloadMessage] = useState(false);
 
   const handleLogout = () => {
     clearAuth();
     router.push("/login");
   };
 
+  const handleExportExcel = async () => {
+    try {
+      // Mostrar mensaje de que la descarga comenzó
+      setShowDownloadMessage(true);
+
+      const response = await fetch('http://127.0.0.1:8000/api/trabajadores/exportar-excel/');
+      const blob = await response.blob();
+
+      // Crear URL del blob
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+
+      // Generar nombre del archivo con fecha y hora
+      const now = new Date();
+      const timestamp = now.toISOString().replace(/[-:]/g, '').split('.')[0].replace('T', '_');
+      a.download = `RELACION_PERSONAL_EXPORT_${timestamp}.xlsx`;
+
+      // Disparar la descarga
+      document.body.appendChild(a);
+      a.click();
+
+      // Limpiar
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      // Ocultar mensaje después de 3 segundos
+      setTimeout(() => setShowDownloadMessage(false), 3000);
+    } catch (error) {
+      console.error('Error al exportar a Excel:', error);
+      setShowDownloadMessage(false);
+    }
+  };
+
+  // Cargar datos al montar el componente
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+
+        // Cargar empleados de 2024 y 2025
+        const employees2024 = await getEmployees(2024);
+        const employees2025 = await getEmployees(2025);
+        const allEmployees = [...employees2024, ...employees2025];
+
+        setEmployees(allEmployees);
+
+        // Calcular total de empleados únicos (por nombre)
+        const uniqueNames = new Set(allEmployees.map(emp => emp.nombre_completo));
+        setTotalEmployees(uniqueNames.size);
+
+        // Calcular total de contratos (todos los registros/empleados)
+        setTotalContracts(allEmployees.length);
+
+        // Generar actividades recientes basadas en los últimos empleados creados
+        const sortedEmployees = [...allEmployees].sort((a, b) =>
+          new Date(b.fecha_creacion).getTime() - new Date(a.fecha_creacion).getTime()
+        );
+
+        const activities = sortedEmployees.slice(0, 3).map(emp => {
+          const createdDate = new Date(emp.fecha_creacion);
+          const now = new Date();
+          const diffTime = Math.abs(now.getTime() - createdDate.getTime());
+          const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+          const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+
+          let timeAgo = '';
+          if (diffDays > 0) {
+            timeAgo = `Hace ${diffDays} día${diffDays > 1 ? 's' : ''}`;
+          } else if (diffHours > 0) {
+            timeAgo = `Hace ${diffHours} hora${diffHours > 1 ? 's' : ''}`;
+          } else {
+            timeAgo = 'Hace unos minutos';
+          }
+
+          return {
+            user: emp.nombre_completo,
+            action: 'completó su registro',
+            time: timeAgo
+          };
+        });
+
+        setRecentActivities(activities);
+
+      } catch (error) {
+        console.error('Error al cargar datos:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
   const stats = [
     {
       title: "Total Empleados",
-      value: "48",
+      value: isLoading ? "..." : totalEmployees.toString(),
       change: "+12%",
       icon: Users,
       color: "from-primary to-accent",
     },
     {
-      title: "Nuevos Registros",
-      value: "8",
+      title: "Total Contratos",
+      value: isLoading ? "..." : totalContracts.toString(),
       change: "+3",
-      icon: UserPlus,
+      icon: FileText,
       color: "from-accent to-primary",
     },
     {
@@ -68,24 +170,6 @@ export default function DashboardPage() {
     { name: "Base de Datos", icon: Database, href: "#" },
     { name: "Reportes", icon: TrendingUp, href: "#" },
     { name: "Configuración", icon: Settings, href: "#" },
-  ];
-
-  const recentActivities = [
-    {
-      user: "Juan Pérez",
-      action: "completó su registro",
-      time: "Hace 2 horas",
-    },
-    {
-      user: "María García",
-      action: "subió documentos",
-      time: "Hace 4 horas",
-    },
-    {
-      user: "Carlos Rodríguez",
-      action: "actualizó su perfil",
-      time: "Hace 1 día",
-    },
   ];
 
   return (
@@ -309,9 +393,10 @@ export default function DashboardPage() {
                   <Button
                     variant="outline"
                     className="w-full justify-start border-primary/20 hover:bg-primary/10"
+                    onClick={handleExportExcel}
                   >
-                    <Database className="mr-2 h-5 w-5" />
-                    Exportar Base de Datos
+                    <Download className="mr-2 h-5 w-5" />
+                    Exportar Base de Datos a Excel
                   </Button>
                 </div>
               </motion.div>
@@ -327,6 +412,25 @@ export default function DashboardPage() {
           onClick={() => setSidebarOpen(false)}
         />
       )}
+
+      {/* Download notification */}
+      <AnimatePresence>
+        {showDownloadMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed top-4 right-4 z-50 rounded-lg border border-primary/50 bg-primary/10 px-6 py-4 shadow-lg backdrop-blur-sm"
+          >
+            <div className="flex items-center gap-3">
+              <Download className="h-5 w-5 text-primary" />
+              <p className="font-medium text-foreground">
+                El archivo Excel comenzó a descargarse
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
