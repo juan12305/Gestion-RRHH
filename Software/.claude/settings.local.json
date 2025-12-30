@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(python manage.py startapp:*)",
+      "Bash(python manage.py check:*)",
+      "Bash(python manage.py migrate:*)",
+      "Bash(pip install:*)",
+      "Bash(\"venv/Scripts/pip.exe\" install django-filter)",
+      "Bash(python manage.py makemigrations:*)",
+      "Bash(python manage.py shell:*)"
+    ]
+  }
+}

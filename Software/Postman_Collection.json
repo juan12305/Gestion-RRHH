@@ -1,0 +1,743 @@
+{
+	"info": {
+		"_postman_id": "rrhh-api-collection",
+		"name": "Sistema RRHH - API Collection",
+		"description": "Colección completa de endpoints para el Sistema de Gestión de Recursos Humanos",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "trabajador_id",
+			"value": "1",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "🔐 Autenticación",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set(\"access_token\", jsonData.access);",
+									"    pm.collectionVariables.set(\"refresh_token\", jsonData.refresh);",
+									"    console.log(\"Token guardado:\", jsonData.access);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Usuario Actual",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/auth/user/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "user", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/auth/logout/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "logout", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "👥 Trabajadores",
+			"item": [
+				{
+					"name": "Listar Trabajadores",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/trabajadores/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "trabajadores", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Trabajador",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tipo\": \"CC\",\n    \"numero\": \"9876543210\",\n    \"fecha_expedicion_cedula\": \"2010-05-20\",\n    \"fecha_nacimiento\": \"1992-08-15\",\n    \"primer_apellido\": \"González\",\n    \"segundo_apellido\": \"Martínez\",\n    \"primer_nombre\": \"María\",\n    \"segundo_nombre\": \"Fernanda\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trabajadores/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "trabajadores", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Trabajador por ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/trabajadores/{{trabajador_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "trabajadores", "{{trabajador_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Trabajador (PATCH)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"primer_nombre\": \"Juan Pablo\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trabajadores/{{trabajador_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "trabajadores", "{{trabajador_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Trabajador",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/trabajadores/{{trabajador_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "trabajadores", "{{trabajador_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Datos Completos del Trabajador",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/trabajadores/{{trabajador_id}}/datos_completos/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "trabajadores", "{{trabajador_id}}", "datos_completos", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📄 Contratación",
+			"item": [
+				{
+					"name": "Ver Contratación",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/trabajadores/{{trabajador_id}}/contratacion/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "trabajadores", "{{trabajador_id}}", "contratacion", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Contratación",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tipo_contrato\": \"OL\",\n    \"cargo\": \"Ingeniero Eléctrico\",\n    \"salario_contratado\": 2500000,\n    \"municipio_base\": \"MONTERIA\",\n    \"fecha_inicio_contrato\": \"2024-01-15\",\n    \"fecha_final_contrato\": \"2024-12-31\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trabajadores/{{trabajador_id}}/contratacion/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "trabajadores", "{{trabajador_id}}", "contratacion", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Contratación",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"salario_contratado\": 2800000\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trabajadores/{{trabajador_id}}/contratacion/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "trabajadores", "{{trabajador_id}}", "contratacion", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Contratación",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/trabajadores/{{trabajador_id}}/contratacion/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "trabajadores", "{{trabajador_id}}", "contratacion", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📥 Ingreso",
+			"item": [
+				{
+					"name": "Ver Ingreso",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/trabajadores/{{trabajador_id}}/ingreso/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "trabajadores", "{{trabajador_id}}", "ingreso", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Ingreso",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fecha_ingreso\": \"2024-01-15\",\n    \"examen_ingreso\": \"2024-01-10\",\n    \"fecha_entrega_epp\": \"2024-01-15\",\n    \"fecha_entrega_dotacion\": \"2024-01-15\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trabajadores/{{trabajador_id}}/ingreso/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "trabajadores", "{{trabajador_id}}", "ingreso", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Ingreso",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fecha_entrega_epp\": \"2024-01-20\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trabajadores/{{trabajador_id}}/ingreso/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "trabajadores", "{{trabajador_id}}", "ingreso", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📤 Retiro",
+			"item": [
+				{
+					"name": "Ver Retiro",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/trabajadores/{{trabajador_id}}/retiro/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "trabajadores", "{{trabajador_id}}", "retiro", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Retiro",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fecha_retiro\": \"2024-12-31\",\n    \"fecha_liquidacion\": \"2025-01-05\",\n    \"valor_liquidacion\": 3500000,\n    \"fecha_examen_retiro\": \"2024-12-30\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trabajadores/{{trabajador_id}}/retiro/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "trabajadores", "{{trabajador_id}}", "retiro", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🏥 Seguridad Social",
+			"item": [
+				{
+					"name": "Ver Seguridad Social",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/trabajadores/{{trabajador_id}}/seguridad-social/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "trabajadores", "{{trabajador_id}}", "seguridad-social", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Seguridad Social",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"eps\": \"SURA\",\n    \"fecha_afiliacion_eps\": \"2024-01-15\",\n    \"caja_compensacion\": \"COMFACOR\",\n    \"fecha_afiliacion_caja\": \"2024-01-15\",\n    \"fondo_pension\": \"PORVENIR\",\n    \"fecha_afiliacion_pension\": \"2024-01-15\",\n    \"arl\": \"POSITIVA\",\n    \"riesgo\": \"III\",\n    \"fecha_afiliacion_arl\": \"2024-01-15\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trabajadores/{{trabajador_id}}/seguridad-social/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "trabajadores", "{{trabajador_id}}", "seguridad-social", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🏗️ Proyectos",
+			"item": [
+				{
+					"name": "Ver Proyectos",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/trabajadores/{{trabajador_id}}/proyectos/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "trabajadores", "{{trabajador_id}}", "proyectos", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Proyectos",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"administrativo\": false,\n    \"construccion_instalaciones\": false,\n    \"construccion_redes\": true,\n    \"servicios\": false,\n    \"mantenimiento_redes\": false\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trabajadores/{{trabajador_id}}/proyectos/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "trabajadores", "{{trabajador_id}}", "proyectos", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📅 Cronograma",
+			"item": [
+				{
+					"name": "Listar Cronogramas",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/trabajadores/{{trabajador_id}}/cronograma/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "trabajadores", "{{trabajador_id}}", "cronograma", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Cronograma",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mes\": \"2025-03-01\",\n    \"municipio_ejecucion\": \"MONTERIA\",\n    \"salario_cotizacion\": 2500000,\n    \"dias_laborados\": 30,\n    \"sueldo_devengado\": 2500000\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trabajadores/{{trabajador_id}}/cronograma/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "trabajadores", "{{trabajador_id}}", "cronograma", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📊 Exportar Excel",
+			"item": [
+				{
+					"name": "Exportar Todos los Trabajadores",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/trabajadores/exportar-excel/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "trabajadores", "exportar-excel", ""]
+						},
+						"description": "Descarga archivo Excel con todos los trabajadores.\n\nNO requiere autenticación.\n\nEn Postman: Click 'Send' → 'Save Response' → 'Save to a file' → guardar como .xlsx"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
